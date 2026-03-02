@@ -59,3 +59,15 @@ sources:
           - name: user_id
             tests:
               - not_null
+
+      - name: int_users_retention_flags
+        description: >
+          Pre-computed retention flags (scripts/compute_retention.py).
+          Grain: user_id x retention_day.
+        columns:
+          - name: user_id
+            tests:
+              - not_null
+          - name: retention_day
+            tests:
+              - not_null
