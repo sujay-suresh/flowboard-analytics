@@ -1,0 +1,100 @@
+version: 2
+
+models:
+  - name: dim_users
+    description: User dimension with attributes, activation metrics, and funnel stage
+    columns:
+      - name: user_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: region
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['US', 'UK', 'AU']
+      - name: current_plan
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['free', 'pro', 'enterprise']
+
+  - name: dim_plans
+    description: Plan dimension with pricing and feature flags
+    columns:
+      - name: plan_name
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_date
+    description: Standard date dimension
+    columns:
+      - name: date_day
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_features
+    description: Product feature taxonomy
+    columns:
+      - name: feature_name
+        tests:
+          - unique
+          - not_null
+
+  - name: fct_user_events
+    description: >
+      Event fact table (incremental materialization).
+      Grain: one row per user event.
+    columns:
+      - name: event_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_id
+      - name: event_type
+        tests:
+          - not_null
+
+  - name: fct_subscriptions
+    description: >
+      Subscription fact table.
+      Grain: one row per subscription period.
+    columns:
+      - name: subscription_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+      - name: user_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_id
+
+  - name: fct_user_funnel_snapshot
+    description: >
+      Accumulating snapshot fact table (Kimball pattern).
+      One row per user tracking progression through funnel milestones.
+    columns:
+      - name: user_id
+        description: Primary key
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_users')
+                field: user_id

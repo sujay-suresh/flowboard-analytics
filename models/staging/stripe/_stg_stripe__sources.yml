@@ -1,0 +1,37 @@
+version: 2
+
+sources:
+  - name: stripe
+    schema: flowboard
+    description: Stripe billing and subscription data
+    tables:
+      - name: raw_subscriptions
+        description: Subscription lifecycle records
+        columns:
+          - name: subscription_id
+            tests:
+              - unique
+              - not_null
+          - name: user_id
+            tests:
+              - not_null
+          - name: plan
+            tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values: ['free', 'pro', 'enterprise']
+          - name: started_at
+            tests:
+              - not_null
+
+      - name: raw_invoices
+        description: Invoice records from Stripe
+        columns:
+          - name: invoice_id
+            tests:
+              - unique
+              - not_null
+          - name: subscription_id
+            tests:
+              - not_null

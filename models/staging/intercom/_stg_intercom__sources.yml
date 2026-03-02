@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: intercom
+    schema: flowboard
+    description: Intercom customer support data
+    tables:
+      - name: raw_conversations
+        description: Support conversation records
+        columns:
+          - name: conversation_id
+            tests:
+              - unique
+              - not_null
+          - name: user_id
+            tests:
+              - not_null

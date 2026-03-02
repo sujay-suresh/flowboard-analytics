@@ -1,0 +1,61 @@
+version: 2
+
+sources:
+  - name: app
+    schema: flowboard
+    description: FlowBoard application database
+    tables:
+      - name: raw_users
+        description: User accounts from the FlowBoard app
+        columns:
+          - name: user_id
+            description: Unique user identifier
+            tests:
+              - unique
+              - not_null
+          - name: email
+            tests:
+              - unique
+              - not_null
+          - name: signed_up_at
+            tests:
+              - not_null
+
+      - name: raw_user_events
+        description: Product analytics events from the FlowBoard app
+        columns:
+          - name: event_id
+            description: Unique event identifier
+            tests:
+              - unique
+              - not_null
+          - name: user_id
+            tests:
+              - not_null
+          - name: event_type
+            tests:
+              - not_null
+              - accepted_values:
+                  arguments:
+                    values:
+                      - board_created
+                      - member_invited
+                      - task_created
+                      - task_completed
+                      - comment_added
+                      - file_uploaded
+                      - settings_changed
+          - name: event_timestamp
+            tests:
+              - not_null
+
+      - name: raw_feature_usage
+        description: Feature-level usage tracking
+        columns:
+          - name: usage_id
+            tests:
+              - unique
+              - not_null
+          - name: user_id
+            tests:
+              - not_null
